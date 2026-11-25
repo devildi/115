@@ -11,7 +11,9 @@
     "moduleResolution": "bundler",
     "isolatedModules": true,
     "moduleDetection": "force",
-    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "./node_modules/.tmp/app",
     "jsx": "preserve",
 
     /* Linting */
@@ -33,6 +35,6 @@
       "./src/types"
     ],
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "src/**/*.d.ts", "src/utils/clip.js"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "src/**/*.d.ts", "package.json"],
   "exclude": ["src/**/__tests__/**"]
 }

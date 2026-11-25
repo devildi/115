@@ -33,7 +33,9 @@ export default defineConfig({
           'subtitlecat.com',
           'javbus.com',
           'javdb.com',
-          'jdbstatic.com'
+          'jdbstatic.com',
+          'dmm.co.jp',
+          'javcdn.cc'
         ],
         require: ['https://cdn.jsdelivr.net/npm/hls.js@1.5.20/dist/hls.min.js'],
         downloadURL: 'https://github.com/cbingb666/115master/releases/latest/download/115master.user.js',

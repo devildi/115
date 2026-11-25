@@ -164,7 +164,7 @@ export const m3u8Clip = (m3u8url: string, options: ClipOptions = {}): Promise<Vi
           }
         };
 
-        mp4boxfile.onSamples = (trackId: any, ref: any, samples: any) => {
+        mp4boxfile.onSamples = (trackId: any, _ref: any, samples: any) => {
           if (videoTrack?.id === trackId) {
             mp4boxfile.stop();
             for (const sample of samples) {

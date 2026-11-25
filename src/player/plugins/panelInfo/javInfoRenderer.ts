@@ -3,9 +3,10 @@ import dayjs from 'dayjs';
 import { iconSeparator } from '../../icons/icons';
 import icoJavBus from '../../ico/icoJavBus.ico';
 import icoJavDB from '../../ico/icoJavdb.ico';
+import PhotoSwipe from 'photoswipe';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import 'photoswipe/style.css';
-import DPlayer from 'dplayer';
+import { Player } from '../../index';
 
 const JAV_ICONS = {
     [JAV_SOURCE.JAVBUS]: icoJavBus,
@@ -16,7 +17,7 @@ const JAV_ICONS = {
  * 番号信息渲染器
  */
 export class JavInfoRenderer {
-    constructor(private dplayer: DPlayer) {
+    constructor(private dplayer: Player) {
     }
 
     registerPreviewImages() {
@@ -27,7 +28,7 @@ export class JavInfoRenderer {
             mouseMovePan: true,
             initialZoomLevel: 'fit',
             wheelToZoom: true,
-            pswpModule: () => import('photoswipe'),
+            pswpModule: PhotoSwipe,
         });
         lightbox.init();
         lightbox.addFilter('domItemData', (itemData, element) => {
@@ -165,7 +166,7 @@ export class JavInfoRenderer {
     private renderPreviewImages(infos: JavInfo[]): string {
         return infos.map(info => `
             <div class="dplayer-panel-preview">
-                ${[{ raw: info.cover }, ...info.preview ?? []].map((img, index) => `
+                ${[{ raw: info.cover }, ...info.preview ?? []].map((img) => `
                     <a href="${img.raw}" class="dplayer-panel-preview-item"
                         data-cropped="true'
                         target="_blank">

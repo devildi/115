@@ -1,0 +1,282 @@
+/* 115 列表视图：允许挂载了封面的视频条目自适应高度撑开 */
+.list-contents li.m115-has-cover,
+.list-contents ul li[file_type="1"].m115-has-cover {
+    height: auto !important;
+    min-height: 40px;
+    overflow: visible !important;
+    padding-bottom: 8px !important;
+}
+
+/* 确保列表视图顶部原有的文件名/大小/时间行之后正常换行显示封面区 */
+.m115-cover-panel {
+    clear: both;
+    position: relative;
+    display: block;
+    width: calc(100% - 52px);
+    margin: 6px 16px 4px 36px;
+    padding: 10px 12px;
+    box-sizing: border-box;
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    line-height: 1.4;
+    cursor: default;
+    user-select: text;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    z-index: 2;
+}
+
+.m115-cover-panel:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+/* 缩略图/网格视图兼容：卡片下方自适应展示封面 */
+.list-thumb li.m115-has-cover {
+    height: auto !important;
+    overflow: visible !important;
+}
+
+.list-thumb li.m115-has-cover .m115-cover-panel {
+    width: 100%;
+    margin: 6px 0 0 0;
+    padding: 6px;
+}
+
+/* 顶部番号元信息栏 */
+.m115-cover-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: #475569;
+}
+
+.m115-cover-meta-left {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-width: 0;
+    flex: 1;
+}
+
+.m115-av-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 5px;
+    background: #2563eb;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s ease;
+}
+
+.m115-av-badge:hover {
+    background: #1d4ed8;
+}
+
+.m115-meta-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 7px;
+    border-radius: 5px;
+    background: #e2e8f0;
+    color: #334155;
+    font-size: 12px;
+    max-width: 260px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.m115-meta-actor {
+    background: #fce7f3;
+    color: #9d174d;
+    font-weight: 500;
+}
+
+.m115-meta-score {
+    background: #fef3c7;
+    color: #92400e;
+    font-weight: 600;
+}
+
+.m115-meta-title {
+    color: #334155;
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 460px;
+}
+
+.m115-cover-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.m115-source-link {
+    color: #2563eb !important;
+    text-decoration: none !important;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(37, 99, 235, 0.08);
+    transition: background 0.15s ease;
+}
+
+.m115-source-link:hover {
+    background: rgba(37, 99, 235, 0.16);
+}
+
+.m115-collapse-btn {
+    border: none;
+    background: transparent;
+    color: #64748b;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.m115-collapse-btn:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+/* 折叠状态 */
+.m115-cover-panel.is-collapsed .m115-cover-gallery {
+    display: none;
+}
+
+.m115-cover-panel.is-collapsed .m115-cover-header {
+    margin-bottom: 0;
+}
+
+/* 加载骨架与未匹配状态 */
+.m115-cover-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #64748b;
+    padding: 6px 2px;
+}
+
+.m115-spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #cbd5e1;
+    border-top-color: #2563eb;
+    border-radius: 50%;
+    animation: m115-spin 0.75s linear infinite;
+    flex-shrink: 0;
+}
+
+@keyframes m115-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* 封面 + 预览图横向画廊 */
+.m115-cover-gallery {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+}
+
+.m115-cover-gallery::-webkit-scrollbar {
+    height: 6px;
+}
+
+.m115-cover-gallery::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.m115-cover-gallery::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 3px;
+}
+
+.m115-cover-gallery::-webkit-scrollbar-thumb:hover {
+    background-color: #94a3b8;
+}
+
+.m115-gallery-item {
+    position: relative;
+    flex: 0 0 auto;
+    height: 168px;
+    border-radius: 7px;
+    overflow: hidden;
+    background: #e2e8f0;
+    cursor: zoom-in;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.m115-gallery-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(15, 23, 42, 0.16);
+}
+
+.m115-gallery-item.is-main-cover {
+    min-width: 220px;
+    max-width: 280px;
+    border: 1px solid rgba(37, 99, 235, 0.25);
+}
+
+.m115-gallery-item.is-preview {
+    min-width: 118px;
+    max-width: 250px;
+}
+
+.m115-gallery-item img {
+    display: block;
+    height: 100%;
+    width: auto;
+    max-width: 280px;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.m115-gallery-item img.is-loaded {
+    opacity: 1;
+}
+
+.m115-item-badge {
+    position: absolute;
+    left: 6px;
+    top: 6px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: rgba(15, 23, 42, 0.72);
+    backdrop-filter: blur(4px);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 500;
+    pointer-events: none;
+}
+
+.list-thumb li.m115-has-cover .m115-gallery-item {
+    height: 110px;
+    min-width: 100px;
+}
+

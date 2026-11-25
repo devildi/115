@@ -5,7 +5,7 @@ type State = {
     loading: boolean;
 }
 
-export class Loading extends PlayerPlugin<any> {
+export class Loading extends PlayerPlugin<State> {
     static pluginName = 'loading';
 
     constructor(player: Player) {
@@ -13,5 +13,9 @@ export class Loading extends PlayerPlugin<any> {
             loading: false,
         });
     }
+
+    mount(): void {}
+
+    destroy(): void {}
 
 }

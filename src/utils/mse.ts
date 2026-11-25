@@ -79,5 +79,5 @@ export const createMediaStreamFromChunks = async (mp4Url: string): Promise<Media
     console.error('Error during streaming:', error);
   }
 
-  return video.captureStream();
+  return (video as HTMLVideoElement & { captureStream(): MediaStream }).captureStream();
 };

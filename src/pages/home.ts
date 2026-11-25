@@ -3,6 +3,7 @@ import { getAvNumber } from '../utils/getNumber';
 import { PlayingVideoInfo } from '../types/player';
 import { goToPlayer } from '../utils/route';
 import { VOD_URL_115 } from '../constants/115';
+import { HomeCoverEnhancer } from './homeCover';
 
 class HomeScript {
 
@@ -14,7 +15,8 @@ class HomeScript {
 
     init() {
         console.log('Home init');
-        this.addFileListItemHouverMenu()
+        this.addFileListItemHouverMenu();
+        new HomeCoverEnhancer();
     }
 
     addFileListItemHouverMenu() {
@@ -49,6 +51,7 @@ class HomeScript {
                     avNumber: getAvNumber(listItem.getAttribute('title')!) || undefined,
                     cid: listItem.getAttribute('cid')!,
                     size: parseInt(listItem.getAttribute('file_size')!),
+                    createTime: Number(listItem.getAttribute('user_ptime')) || 0,
                 }
 
                 console.log('即将播放', playingVideoInfo);
