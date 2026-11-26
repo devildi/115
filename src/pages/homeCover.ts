@@ -21,7 +21,7 @@ interface GalleryImageEntry {
 export class HomeCoverEnhancer {
     private intersectionObserver: IntersectionObserver;
     private mutationObserver: MutationObserver;
-    private pendingElements = new Map<HTMLElement, { avNumber: string; panel: HTMLElement }>();
+    private pendingElements = new Map<HTMLElement, { avNumber: string; row: HTMLElement; panel: HTMLElement }>();
     private scanScheduled = false;
 
     constructor() {
@@ -86,8 +86,15 @@ export class HomeCoverEnhancer {
     /**
      * 锁定列表行内原有的绝对定位元素高度位置，防止 li 高度撑开后复选框/文件图标垂直居中偏移
      */
-    private preserveTopRowPositions(li: HTMLElement) {
-        if (!li.closest('.list-contents')) return;
+    private preserveTopRowPositions(li: HTMLElement): number {
+        const origHeight = li.offsetHeight || 40;
+        li.style.setProperty('--m115-row-height', `${origHeight}px`);
+
+        if (li.closest('.list-thumb')) {
+            li.classList.add('m115-has-cover');
+            return origHeight;
+        }
+
         const children = Array.from(li.children) as HTMLElement[];
         const snapshots = children.map((child) => {
             const style = window.getComputedStyle(child);
@@ -102,37 +109,51 @@ export class HomeCoverEnhancer {
 
         // 如果某子元素因 top: 50% 随着高度变化发生下移，则固定回首行原来的像素位置
         snapshots.forEach(({ el, position, top }) => {
-            if (position === 'absolute' && top >= 0 && top <= 40 && Math.abs(el.offsetTop - top) > 4) {
+            if (position === 'absolute' && top >= 0 && top <= origHeight && Math.abs(el.offsetTop - top) > 4) {
                 el.style.top = `${top}px`;
+                el.style.bottom = 'auto';
             }
         });
+
+        return origHeight;
+    }
+
+    private ensureStrictBelowTopRow(li: HTMLElement, row: HTMLElement, origHeight: number) {
+        if (li.closest('.list-thumb')) return;
+        // 如果原列表行内部全部为绝对定位元素导致文档流高度为 0，主动下推画廊容器避免重叠到首行文字上
+        if (origHeight >= 28 && row.offsetTop < origHeight - 8) {
+            row.style.paddingTop = `${origHeight - row.offsetTop + 4}px`;
+        }
     }
 
     private mountCoverContainer(li: HTMLElement, avNumber: string) {
-        this.preserveTopRowPositions(li);
-        if (!li.classList.contains('m115-has-cover')) {
-            li.classList.add('m115-has-cover');
+        // 先检查缓存是否明确无结果，避免无番号结果的条目闪动
+        const cached = javCoverService.getCached(avNumber);
+        if (cached === null) {
+            return;
         }
+
+        const origHeight = this.preserveTopRowPositions(li);
+
+        const row = document.createElement('div');
+        row.className = 'm115-cover-row';
 
         const panel = document.createElement('div');
         panel.className = 'm115-cover-panel';
+        row.appendChild(panel);
 
         // 阻止面板内的点击、双击、按下事件冒泡触发 115 原生勾选或视频跳转播放
         const stopBubble = (e: Event) => {
             e.stopPropagation();
         };
-        panel.addEventListener('click', stopBubble);
-        panel.addEventListener('dblclick', stopBubble);
-        panel.addEventListener('mousedown', stopBubble);
+        row.addEventListener('click', stopBubble);
+        row.addEventListener('dblclick', stopBubble);
+        row.addEventListener('mousedown', stopBubble);
 
         // 若本地持久化缓存已命中，直接渲染，无需等待懒加载网络请求
-        const cached = javCoverService.getCached(avNumber);
         if (cached !== undefined) {
-            if (cached === null) {
-                li.classList.remove('m115-has-cover');
-                return;
-            }
-            li.appendChild(panel);
+            li.appendChild(row);
+            this.ensureStrictBelowTopRow(li, row, origHeight);
             this.renderInfo(panel, avNumber, cached);
             return;
         }
@@ -144,9 +165,10 @@ export class HomeCoverEnhancer {
                 <span>等待加载封面与预览图…</span>
             </div>
         `;
-        li.appendChild(panel);
+        li.appendChild(row);
+        this.ensureStrictBelowTopRow(li, row, origHeight);
 
-        this.pendingElements.set(li, { avNumber, panel });
+        this.pendingElements.set(li, { avNumber, row, panel });
         this.intersectionObserver.observe(li);
     }
 
@@ -160,11 +182,11 @@ export class HomeCoverEnhancer {
             if (!task) continue;
             this.pendingElements.delete(li);
 
-            this.loadAndRender(li, task.avNumber, task.panel);
+            this.loadAndRender(li, task.avNumber, task.row, task.panel);
         }
     }
 
-    private async loadAndRender(li: HTMLElement, avNumber: string, panel: HTMLElement) {
+    private async loadAndRender(li: HTMLElement, avNumber: string, row: HTMLElement, panel: HTMLElement) {
         const statusText = panel.querySelector('.m115-cover-status span:last-child');
         if (statusText) {
             statusText.textContent = '正在获取封面与预览图…';
@@ -174,7 +196,7 @@ export class HomeCoverEnhancer {
         if (!li.isConnected) return;
 
         if (!info || (!info.cover && (!info.preview || info.preview.length === 0))) {
-            panel.remove();
+            row.remove();
             li.classList.remove('m115-has-cover');
             return;
         }

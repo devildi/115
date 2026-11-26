@@ -1,19 +1,41 @@
-/* 115 列表视图：允许挂载了封面的视频条目自适应高度撑开 */
+/* 115 列表项：强制允许换行与高度自适应，确保文件名行在上、封面画廊严格在下 */
+li[file_type="1"].m115-has-cover,
 .list-contents li.m115-has-cover,
 .list-contents ul li[file_type="1"].m115-has-cover {
     height: auto !important;
-    min-height: 40px;
+    min-height: var(--m115-row-height, 40px) !important;
+    max-height: none !important;
     overflow: visible !important;
+    flex-wrap: wrap !important;
+    align-content: flex-start !important;
     padding-bottom: 8px !important;
 }
 
-/* 确保列表视图顶部原有的文件名/大小/时间行之后正常换行显示封面区 */
+/* 防止绝对定位的悬浮操作栏随 li 撑高而下移到封面区域 */
+li[file_type="1"].m115-has-cover > .file-opr {
+    bottom: auto !important;
+    max-height: var(--m115-row-height, 40px) !important;
+}
+
+/* 独占整行的第二层容器：兼容 Flex 布局（flex-basis: 100%）与 Float/Block 布局（clear: both） */
+.m115-cover-row {
+    display: block !important;
+    clear: both !important;
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    order: 999 !important;
+    box-sizing: border-box !important;
+    padding: 6px 16px 4px 36px;
+    margin: 0 !important;
+}
+
 .m115-cover-panel {
-    clear: both;
     position: relative;
     display: block;
-    width: calc(100% - 52px);
-    margin: 6px 16px 4px 36px;
+    width: 100%;
+    margin: 0;
     padding: 10px 12px;
     box-sizing: border-box;
     background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
@@ -32,14 +54,16 @@
 }
 
 /* 缩略图/网格视图兼容：卡片下方自适应展示封面 */
-.list-thumb li.m115-has-cover {
+.list-thumb li[file_type="1"].m115-has-cover {
     height: auto !important;
     overflow: visible !important;
 }
 
-.list-thumb li.m115-has-cover .m115-cover-panel {
-    width: 100%;
-    margin: 6px 0 0 0;
+.list-thumb li[file_type="1"].m115-has-cover .m115-cover-row {
+    padding: 6px 0 0 0;
+}
+
+.list-thumb li[file_type="1"].m115-has-cover .m115-cover-panel {
     padding: 6px;
 }
 
@@ -275,8 +299,7 @@
     pointer-events: none;
 }
 
-.list-thumb li.m115-has-cover .m115-gallery-item {
+.list-thumb li[file_type="1"].m115-has-cover .m115-gallery-item {
     height: 110px;
     min-width: 100px;
 }
-
