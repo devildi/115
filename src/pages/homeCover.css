@@ -94,7 +94,8 @@ li[file_type="1"].m115-has-cover > .file-opr {
     padding: 2px 8px;
     border-radius: 5px;
     background: #2563eb;
-    color: #ffffff;
+    color: #ffffff !important;
+    text-decoration: none !important;
     font-weight: 600;
     font-size: 12px;
     letter-spacing: 0.3px;
@@ -105,6 +106,8 @@ li[file_type="1"].m115-has-cover > .file-opr {
 
 .m115-av-badge:hover {
     background: #1d4ed8;
+    color: #ffffff !important;
+    text-decoration: none !important;
 }
 
 .m115-meta-tag {

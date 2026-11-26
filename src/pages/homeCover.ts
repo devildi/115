@@ -160,7 +160,7 @@ export class HomeCoverEnhancer {
 
         panel.innerHTML = `
             <div class="m115-cover-status">
-                <span class="m115-av-badge">${this.escapeHtml(avNumber)}</span>
+                <a class="m115-av-badge" href="${this.escapeHtml(this.getJavDbSearchUrl(avNumber))}" target="_blank" rel="noopener noreferrer" title="在 JavDB 搜索 ${this.escapeHtml(avNumber)}">${this.escapeHtml(avNumber)}</a>
                 <span class="m115-spinner"></span>
                 <span>等待加载封面与预览图…</span>
             </div>
@@ -237,7 +237,7 @@ export class HomeCoverEnhancer {
         panel.innerHTML = `
             <div class="m115-cover-header">
                 <div class="m115-cover-meta-left">
-                    <span class="m115-av-badge" title="点击复制番号">${this.escapeHtml(displayCode)}</span>
+                    <a class="m115-av-badge" href="${this.escapeHtml(this.getJavDbSearchUrl(displayCode))}" target="_blank" rel="noopener noreferrer" title="在 JavDB 搜索 ${this.escapeHtml(displayCode)}">${this.escapeHtml(displayCode)}</a>
                     ${actors ? `<span class="m115-meta-tag m115-meta-actor" title="${this.escapeHtml(actors)}">${this.escapeHtml(actors)}</span>` : ''}
                     ${scoreStr ? `<span class="m115-meta-tag m115-meta-score">${this.escapeHtml(scoreStr)}</span>` : ''}
                     ${dateStr ? `<span class="m115-meta-tag">${this.escapeHtml(dateStr)}</span>` : ''}
@@ -251,18 +251,6 @@ export class HomeCoverEnhancer {
             </div>
             <div class="m115-cover-gallery"></div>
         `;
-
-        // 点击番号胶囊复制番号
-        const badge = panel.querySelector('.m115-av-badge') as HTMLElement | null;
-        badge?.addEventListener('click', () => {
-            navigator.clipboard?.writeText(displayCode).then(() => {
-                const prev = badge.textContent;
-                badge.textContent = `已复制 ${displayCode}`;
-                setTimeout(() => {
-                    badge.textContent = prev;
-                }, 1200);
-            });
-        });
 
         // 折叠 / 展开按钮
         const collapseBtn = panel.querySelector('.m115-collapse-btn') as HTMLButtonElement | null;
@@ -390,6 +378,10 @@ export class HomeCoverEnhancer {
         });
 
         pswp.init();
+    }
+
+    private getJavDbSearchUrl(avNumber: string): string {
+        return `https://javdb.com/search?q=${encodeURIComponent(avNumber.trim())}&f=all`;
     }
 
     private escapeHtml(str: string): string {
